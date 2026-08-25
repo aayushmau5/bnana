@@ -24,12 +24,13 @@ defmodule Bnana.App do
 
     {:ok, _} = Application.ensure_all_started(:ecto_sqlite3)
     {:ok, _} = Bnana.Repo.start_link()
+
     Ecto.Migrator.with_repo(Bnana.Repo, fn repo ->
       Ecto.Migrator.run(repo, migrations_dir(), :up, all: true)
     end)
 
     Mob.Screen.start_root(Bnana.HomeScreen)
-    Mob.Dist.ensure_started(node: :"bnana_android@127.0.0.1", cookie: :mob_secret)
+    Mob.Dist.ensure_started(node: :"bnana_ios@127.0.0.1", cookie: :mob_secret)
   end
 
   # Returns the path to the migrations directory for the current environment.
@@ -53,7 +54,7 @@ defmodule Bnana.App do
   # and pass the explicit path to Ecto.Migrator.run/4.
   defp migrations_dir do
     case System.get_env("MOB_BEAMS_DIR") do
-      nil       -> Application.app_dir(:bnana, "priv/repo/migrations")
+      nil -> Application.app_dir(:bnana, "priv/repo/migrations")
       beams_dir -> Path.join([beams_dir, "priv", "repo", "migrations"])
     end
   end

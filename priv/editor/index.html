@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <style>
+      @font-face {
+        font-family: "Playfair";
+        src: url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Playfair";
+        src: url("../fonts/PlayfairDisplay-Italic.ttf") format("truetype");
+        font-style: italic;
+      }
+
+      @font-face {
+        font-family: "Share Tech Mono";
+        src: url("../fonts/ShareTechMono-Regular.ttf") format("truetype");
+      }
+
+      :root {
+        color-scheme: dark;
+        --bg: #0d0d1a;
+        --surface: #16162a;
+        --surface-raised: #1e1e38;
+        --line: #2d2d4a;
+        --text: #e8e6ff;
+        --muted: #6b6b8e;
+        --accent: #7c3aed;
+        --accent-soft: #a78bfa;
+        --danger: #f87171;
+        --mono: "Share Tech Mono", ui-monospace, monospace;
+        --serif: "Playfair", Georgia, serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        font-family: var(--serif);
+        overscroll-behavior: none;
+        overflow-y: auto;
+      }
+
+      button, input, textarea { font: inherit; }
+      button { -webkit-tap-highlight-color: transparent; }
+
+      .shell {
+        min-height: 100vh;
+        padding: 14px 16px calc(24px + env(safe-area-inset-bottom));
+      }
+
+      .tabs {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: grid;
+        grid-template-columns: auto 1fr 1fr;
+        gap: 6px;
+        padding: 5px;
+        margin: 0 -4px 18px;
+        background: color-mix(in srgb, var(--bg) 94%, transparent);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        backdrop-filter: blur(12px);
+      }
+
+      .tab, .back-trigger {
+        min-height: 42px;
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 14px;
+      }
+
+      .tab.active {
+        background: var(--surface-raised);
+        color: var(--accent-soft);
+      }
+
+      .back-trigger {
+        min-width: 44px;
+        color: var(--accent-soft);
+        font-size: 20px;
+      }
+
+      .field-label, .eyebrow {
+        display: block;
+        margin: 0 0 7px;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      .title-input {
+        width: 100%;
+        padding: 4px 0 12px;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font-family: var(--serif);
+        font-size: clamp(32px, 9vw, 52px);
+        font-weight: 700;
+        line-height: 1.05;
+      }
+
+      .title-input::placeholder, .body-input::placeholder {
+        color: color-mix(in srgb, var(--muted) 72%, transparent);
+      }
+
+      .body-input {
+        display: block;
+        width: 100%;
+        min-height: calc(100dvh - 190px);
+        padding: 16px 0 80px;
+        resize: none;
+        overflow-y: hidden;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 17px;
+        line-height: 1.7;
+        caret-color: var(--accent);
+      }
+
+      .save-state {
+        position: fixed;
+        right: 18px;
+        bottom: calc(14px + env(safe-area-inset-bottom));
+        z-index: 4;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+
+      .save-state.saving { color: var(--accent); }
+      .save-state.error { color: var(--danger); }
+
+      .components-trigger {
+        position: fixed;
+        right: 18px;
+        bottom: calc(54px + env(safe-area-inset-bottom));
+        z-index: 6;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid color-mix(in srgb, var(--accent-soft) 45%, transparent);
+        border-radius: 50%;
+        background: var(--accent);
+        color: white;
+        box-shadow: 0 8px 24px rgb(0 0 0 / .35);
+        font-family: var(--mono);
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .preview { padding: 2px 2px 80px; }
+
+      .preview h1 {
+        margin: 8px 0 28px;
+        color: var(--text);
+        font-size: clamp(38px, 10vw, 58px);
+        line-height: 1.03;
+      }
+
+      .preview h2, .preview h3, .preview h4 {
+        margin: 1.6em 0 .5em;
+        color: var(--text);
+        line-height: 1.18;
+      }
+
+      .preview h2 { font-size: 30px; }
+      .preview h3 { font-size: 24px; }
+      .preview p, .preview li {
+        color: var(--text);
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      .preview a { color: var(--accent-soft); text-underline-offset: 3px; }
+      .preview img { max-width: 100%; border-radius: 10px; }
+      .preview hr { margin: 34px 0; border: 0; border-top: 1px solid var(--line); }
+      .preview ul, .preview ol { padding-left: 25px; }
+
+      .preview blockquote, .callout, .card, .details {
+        margin: 22px 0;
+        padding: 16px 18px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--accent);
+        border-radius: 9px;
+        background: var(--surface);
+      }
+
+      .callout.danger { border-left-color: var(--danger); }
+      .callout-label, .card-title {
+        margin-bottom: 6px;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      .callout.danger .callout-label { color: var(--danger); }
+      .card-title { color: var(--text); font-size: 14px; text-transform: none; }
+      .details summary { cursor: pointer; color: var(--accent-soft); font-family: var(--mono); }
+      .details-body { margin-top: 12px; }
+
+      .code-wrap {
+        overflow: hidden;
+        margin: 22px 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+      }
+
+      .code-file {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      pre { overflow-x: auto; margin: 0; padding: 16px; }
+      code { font-family: var(--mono); font-size: 14px; line-height: 1.6; }
+      :not(pre) > code { padding: 2px 5px; border-radius: 4px; background: var(--surface-raised); }
+
+      .empty-preview {
+        padding: 72px 20px;
+        color: var(--muted);
+        font-size: 22px;
+        font-style: italic;
+        text-align: center;
+      }
+
+      .component-sheet {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        align-items: flex-end;
+        background: rgb(0 0 0 / .58);
+      }
+
+      .component-sheet.open { display: flex; }
+      .sheet-card {
+        width: 100%;
+        max-height: 78vh;
+        padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+        overflow-y: auto;
+        border: 1px solid var(--line);
+        border-radius: 18px 18px 0 0;
+        background: var(--surface);
+      }
+
+      .sheet-title { margin: 0 0 4px; font-size: 24px; }
+      .sheet-help { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+      .component-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+      .component-option {
+        min-height: 58px;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--surface-raised);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        text-align: left;
+      }
+
+      .sheet-close {
+        width: 100%;
+        margin-top: 12px;
+        padding: 12px;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--muted);
+        font-family: var(--mono);
+      }
+
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="tabs" aria-label="Editor mode">
+        <button class="back-trigger" id="back-trigger" type="button" aria-label="Back to blogs">←</button>
+        <button class="tab active" id="edit-tab" type="button">Editing</button>
+        <button class="tab" id="preview-tab" type="button">Viewing</button>
+      </nav>
+
+      <section id="editor-pane">
+        <label class="field-label" for="title">Heading</label>
+        <input class="title-input" id="title" type="text" placeholder="A thought without a title" autocomplete="off" />
+
+        <label class="field-label" for="body">Markdown</label>
+        <textarea class="body-input" id="body" placeholder="Start wherever you are…" spellcheck="true"></textarea>
+      </section>
+
+      <article class="preview" id="preview-pane" hidden>
+        <div id="preview-content"></div>
+      </article>
+    </main>
+
+    <button class="components-trigger" id="components-trigger" type="button" aria-label="Insert component">＋</button>
+    <div class="save-state" id="save-state">saved locally</div>
+
+    <aside class="component-sheet" id="component-sheet" aria-hidden="true">
+      <div class="sheet-card">
+        <h2 class="sheet-title">Add a block</h2>
+        <p class="sheet-help">It inserts readable Markdown right where your cursor is.</p>
+        <div class="component-grid" id="component-grid"></div>
+        <button class="sheet-close" id="sheet-close" type="button">Close</button>
+      </div>
+    </aside>
+
+    <script>
+      (() => {
+        const title = document.getElementById("title");
+        const body = document.getElementById("body");
+        const editorPane = document.getElementById("editor-pane");
+        const previewPane = document.getElementById("preview-pane");
+        const previewContent = document.getElementById("preview-content");
+        const editTab = document.getElementById("edit-tab");
+        const previewTab = document.getElementById("preview-tab");
+        const saveState = document.getElementById("save-state");
+        const sheet = document.getElementById("component-sheet");
+        let mode = "edit";
+        let initialized = false;
+        let scrollRestoreVersion = 0;
+
+        const blocks = [
+          ["Info callout", '> (info) **Note** Write something helpful here'],
+          ["Danger callout", '> (danger) **Careful** Write the warning here'],
+          ["Card", '> (card) Put the card content here'],
+          ["Titled card", '> (card: "Card title") Put the card content here'],
+          ["Expandable", '> (details: "Read more")\n> Hidden details go here'],
+          ["Image", '![Image description](/images/blog/image.jpg "Optional caption")'],
+          ["Link", '[Link title](https://example.com)'],
+          ["Separator", '---'],
+          ["Code block", '```elixir filename="example.ex"\nIO.puts("hello")\n```']
+        ];
+
+        function withMob(callback) {
+          if (window.mob && typeof window.mob.send === "function") {
+            callback(window.mob);
+          } else {
+            setTimeout(() => withMob(callback), 30);
+          }
+        }
+
+        function send(payload) {
+          withMob((mob) => mob.send(payload));
+        }
+
+        function notifyChange() {
+          const restoreVersion = ++scrollRestoreVersion;
+          const scroller = document.scrollingElement;
+          const scrollPosition = scroller.scrollTop;
+          const distanceFromBottom = scroller.scrollHeight - scrollPosition - scroller.clientHeight;
+          const wasNearBottom = distanceFromBottom < 120;
+          resizeBody();
+
+          const restoreScroll = () => {
+            if (restoreVersion !== scrollRestoreVersion) return;
+
+            const targetPosition = wasNearBottom
+              ? scroller.scrollHeight - scroller.clientHeight
+              : scrollPosition;
+
+            scroller.scrollTop = targetPosition;
+            document.body.scrollTop = targetPosition;
+            window.scrollTo(0, targetPosition);
+          };
+
+          restoreScroll();
+          requestAnimationFrame(() => requestAnimationFrame(restoreScroll));
+          setTimeout(restoreScroll, 80);
+          setSaveState("saving");
+          send({
+            event: "change",
+            title: title.value,
+            body: body.value,
+            cursor: body.selectionStart || 0,
+            mode
+          });
+        }
+
+        function sendViewState() {
+          send({event: "view_state", cursor: body.selectionStart || 0, mode});
+        }
+
+        function resizeBody() {
+          const minimumHeight = window.innerHeight - 190;
+          const requiredHeight = Math.max(body.scrollHeight, minimumHeight);
+
+          if (requiredHeight > body.clientHeight) {
+            body.style.height = `${requiredHeight}px`;
+          }
+        }
+
+        function setSaveState(state) {
+          saveState.className = `save-state ${state}`;
+          saveState.textContent = state === "saving"
+            ? "saving…"
+            : state === "error" ? "save failed" : "saved locally";
+        }
+
+        function setMode(nextMode, report = true) {
+          mode = nextMode === "preview" ? "preview" : "edit";
+          const previewing = mode === "preview";
+          editorPane.hidden = previewing;
+          previewPane.hidden = !previewing;
+          editTab.classList.toggle("active", !previewing);
+          previewTab.classList.toggle("active", previewing);
+          document.getElementById("components-trigger").hidden = previewing;
+          if (previewing) renderPreview();
+          if (report) sendViewState();
+        }
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+          })[character]);
+        }
+
+        function inlineMarkdown(value) {
+          let text = escapeHtml(value);
+          text = text.replace(/!\[([^\]]*)\]\(([^\s)]+)(?:\s+&quot;([^&]*)&quot;)?\)/g,
+            '<figure><img src="$2" alt="$1"><figcaption>$3</figcaption></figure>');
+          text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+          text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+          text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+          text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+          text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+          text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+          text = text.replace(/~~([^~]+)~~/g, '<s>$1</s>');
+          return text;
+        }
+
+        function renderMarkdown(markdown) {
+          const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+          const output = [];
+          let index = 0;
+
+          while (index < lines.length) {
+            const line = lines[index];
+            if (!line.trim()) { index += 1; continue; }
+
+            if (line.startsWith("```")) {
+              const info = line.slice(3).trim();
+              const filename = (info.match(/filename="([^"]+)"/) || [])[1] || "";
+              const language = info.split(/\s+/)[0] || "";
+              const code = [];
+              index += 1;
+              while (index < lines.length && !lines[index].startsWith("```")) {
+                code.push(lines[index]); index += 1;
+              }
+              index += 1;
+              output.push(`<div class="code-wrap">${filename ? `<div class="code-file">${escapeHtml(filename)}</div>` : ""}<pre><code class="language-${escapeHtml(language)}">${escapeHtml(code.join("\n"))}</code></pre></div>`);
+              continue;
+            }
+
+            const heading = line.match(/^(#{1,4})\s+(.+)$/);
+            if (heading) {
+              const level = heading[1].length;
+              output.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`);
+              index += 1; continue;
+            }
+
+            if (/^\s*---+\s*$/.test(line)) {
+              output.push("<hr>"); index += 1; continue;
+            }
+
+            if (/^>\s?/.test(line)) {
+              const quoted = [];
+              while (index < lines.length && /^>\s?/.test(lines[index])) {
+                quoted.push(lines[index].replace(/^>\s?/, "")); index += 1;
+              }
+              const first = quoted[0] || "";
+              const marker = first.match(/^\((info|danger|card|details)(?::\s*"([^"]*)")?\)\s*(.*)$/);
+              if (!marker) {
+                output.push(`<blockquote>${quoted.map(inlineMarkdown).join("<br>")}</blockquote>`);
+                continue;
+              }
+              const kind = marker[1];
+              const label = marker[2] || "";
+              quoted[0] = marker[3] || "";
+              const content = quoted.map(inlineMarkdown).join("<br>");
+              if (kind === "info" || kind === "danger") {
+                output.push(`<aside class="callout ${kind}"><div class="callout-label">${kind}</div>${content}</aside>`);
+              } else if (kind === "card") {
+                output.push(`<section class="card">${label ? `<div class="card-title">${escapeHtml(label)}</div>` : ""}${content}</section>`);
+              } else {
+                output.push(`<details class="details"><summary>${escapeHtml(label || "Read more")}</summary><div class="details-body">${content}</div></details>`);
+              }
+              continue;
+            }
+
+            const unordered = line.match(/^[-*]\s+(.+)$/);
+            const ordered = line.match(/^\d+\.\s+(.+)$/);
+            if (unordered || ordered) {
+              const tag = unordered ? "ul" : "ol";
+              const items = [];
+              const matcher = unordered ? /^[-*]\s+(.+)$/ : /^\d+\.\s+(.+)$/;
+              while (index < lines.length) {
+                const match = lines[index].match(matcher);
+                if (!match) break;
+                items.push(`<li>${inlineMarkdown(match[1])}</li>`);
+                index += 1;
+              }
+              output.push(`<${tag}>${items.join("")}</${tag}>`);
+              continue;
+            }
+
+            const paragraph = [line];
+            index += 1;
+            while (index < lines.length && lines[index].trim() &&
+              !/^(#{1,4})\s+/.test(lines[index]) &&
+              !/^```/.test(lines[index]) &&
+              !/^>\s?/.test(lines[index]) &&
+              !/^[-*]\s+/.test(lines[index]) &&
+              !/^\d+\.\s+/.test(lines[index]) &&
+              !/^\s*---+\s*$/.test(lines[index])) {
+              paragraph.push(lines[index]); index += 1;
+            }
+            output.push(`<p>${paragraph.map(inlineMarkdown).join("<br>")}</p>`);
+          }
+
+          return output.join("\n");
+        }
+
+        function renderPreview() {
+          const content = body.value.trim();
+          const heading = title.value.trim();
+          previewContent.innerHTML = !content && !heading
+            ? '<div class="empty-preview">Your unfinished thought will appear here.</div>'
+            : `${heading ? `<h1>${escapeHtml(heading)}</h1>` : ""}${renderMarkdown(content)}`;
+        }
+
+        function insertBlock(snippet) {
+          setMode("edit", false);
+          const start = body.selectionStart || 0;
+          const end = body.selectionEnd || start;
+          const before = body.value.slice(0, start);
+          const after = body.value.slice(end);
+          const prefix = before && !before.endsWith("\n") ? "\n\n" : "";
+          const suffix = after && !after.startsWith("\n") ? "\n\n" : "";
+          const inserted = `${prefix}${snippet}${suffix}`;
+          body.value = before + inserted + after;
+          resizeBody();
+          const cursor = before.length + inserted.length;
+          body.focus();
+          body.setSelectionRange(cursor, cursor);
+          closeSheet();
+          notifyChange();
+        }
+
+        function openSheet() {
+          sheet.classList.add("open");
+          sheet.setAttribute("aria-hidden", "false");
+        }
+
+        function closeSheet() {
+          sheet.classList.remove("open");
+          sheet.setAttribute("aria-hidden", "true");
+        }
+
+        for (const [label, snippet] of blocks) {
+          const button = document.createElement("button");
+          button.className = "component-option";
+          button.type = "button";
+          button.textContent = label;
+          button.addEventListener("click", () => insertBlock(snippet));
+          document.getElementById("component-grid").appendChild(button);
+        }
+
+        title.addEventListener("input", notifyChange);
+        body.addEventListener("input", notifyChange);
+        body.addEventListener("blur", sendViewState);
+        editTab.addEventListener("click", () => setMode("edit"));
+        previewTab.addEventListener("click", () => setMode("preview"));
+        document.getElementById("back-trigger").addEventListener("click", () => send({event: "back"}));
+        document.getElementById("components-trigger").addEventListener("click", openSheet);
+        document.getElementById("sheet-close").addEventListener("click", closeSheet);
+        sheet.addEventListener("click", (event) => { if (event.target === sheet) closeSheet(); });
+        withMob((mob) => {
+          mob.onMessage((message) => {
+            if (message.event === "init") {
+              title.value = message.title || "";
+              body.value = message.body || "";
+              resizeBody();
+              setMode(message.mode || "edit", false);
+              const cursor = Math.min(Number(message.cursor || 0), body.value.length);
+              body.setSelectionRange(cursor, cursor);
+              initialized = true;
+              setSaveState("saved");
+            } else if (message.event === "save_state") {
+              setSaveState(message.state || "saved");
+            }
+          });
+          mob.send({event: "ready"});
+        });
+      })();
+    </script>
+  </body>
+</html>
