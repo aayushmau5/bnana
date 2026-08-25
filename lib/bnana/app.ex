@@ -10,6 +10,8 @@ defmodule Bnana.App do
 
   @impl Mob.App
   def on_start do
+    Mob.Theme.set(Bnana.Theme)
+
     # Configure BEAM's DNS path so Req / Finch / Mint / `gen_tcp:connect/3`
     # with a hostname work on iOS without per-host setup. Flips the lookup
     # chain from the iOS-broken `:native` (inet_gethost port program) path

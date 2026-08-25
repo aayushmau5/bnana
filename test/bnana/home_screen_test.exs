@@ -11,7 +11,8 @@ defmodule Bnana.HomeScreenTest do
   test "shows blogs as the sole product destination" do
     view = mount_screen(HomeScreen)
 
-    assert find(view, :button, text: "Blogs")
+    assert text(view) =~ "Blogs"
+    assert find(view, :button, text: "wander in  →")
     refute find(view, :button, text: "Eva")
   end
 

@@ -43,7 +43,7 @@ defmodule Bnana.BlogsFlowTest do
 
   test "dashboard creates a draft and opens its editor" do
     view = mount_screen(BlogsScreen)
-    assert_renderable(view)
+    assert_renderable(view, extra: [:icon])
     assert text(view) =~ "No wandering thoughts yet"
 
     view = render_info(view, {:tap, :create_draft})

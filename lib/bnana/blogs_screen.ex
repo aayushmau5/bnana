@@ -97,22 +97,32 @@ defmodule Bnana.BlogsScreen do
 
   defp header do
     display_font = @display_font
+    tap = {self(), :back}
 
     ~MOB"""
-    <Row background={:background} fill_width={true}>
-      {small_button("←", :back)}
+    <Box background={:background} align="center" fill_width={true}>
       <Text
         text="Blogs"
         text_size={:xl}
         text_color={:on_surface}
         font={display_font}
         font_weight="bold"
-        weight={1}
-        padding_left={:space_sm}
         padding_top={:space_sm}
         padding_bottom={:space_sm}
       />
-    </Row>
+      <Row fill_width={true}>
+        <Icon
+          name="back"
+          text="Go back"
+          text_size={20.0}
+          text_color={:on_surface}
+          padding={:space_sm}
+          padding_left={10.0}
+          on_tap={tap}
+        />
+        <Spacer />
+      </Row>
+    </Box>
     """
   end
 
@@ -298,22 +308,6 @@ defmodule Bnana.BlogsScreen do
   background={:surface}
   fill_width={false}
   width={72}
-  on_tap={tap}
-/>)
-  end
-
-  defp small_button(label, tag) do
-    ui_font = @ui_font
-    tap = {self(), tag}
-
-    ~MOB(<Button
-  text={label}
-  text_size={:xl}
-  font={ui_font}
-  background={:background}
-  text_color={:on_surface}
-  fill_width={false}
-  width={48}
   on_tap={tap}
 />)
   end

@@ -3,30 +3,81 @@ defmodule Bnana.HomeScreen do
   use Mob.Screen
 
   @regular_font "PlayfairDisplay-Regular"
+  @italic_font "PlayfairDisplay-Italic"
   @mono_font "ShareTechMono-Regular"
 
   def mount(_params, _session, socket) do
-    Mob.Theme.set(MobThemes.Obsidian)
     {:ok, socket}
   end
 
   def render(_assigns) do
-    ui_font = @regular_font
+    regular_font = @regular_font
+    italic_font = @italic_font
+    mono_font = @mono_font
 
     ~MOB"""
     <Scroll background={:background}>
-      <Column background={:background} padding={:space_lg}>
+      <Column background={:background} padding={:space_lg} fill_width={true}>
+        <Row fill_width={true}>
+          <Text
+            text="bnana."
+            text_size={52.0}
+            font={regular_font}
+            font_weight="bold"
+            text_color={:on_surface}
+          />
+          <Spacer />
+          <Text text="✦" text_size={26.0} text_color={:secondary} padding_top={:space_sm} />
+        </Row>
         <Text
-          text="Bnana"
-          text_size={48.0}
-          font={ui_font}
-          font_weight="bold"
-          text_color={:on_surface}
-          padding={:space_sm}
+          text="a small place for you :)"
+          text_size={:lg}
+          font={italic_font}
+          text_color={:muted}
+          line_height={1.35}
+          padding_top={:space_xs}
         />
-        <Spacer size={20} />
-        {nav_button("Blogs", :open_blogs)}
-        <Spacer size={12} />
+        <Spacer size={42} />
+        <Box
+          background={:surface}
+          border_color={:border}
+          border_width={1}
+          corner_radius={:radius_lg}
+          padding={:space_lg}
+        >
+          <Column fill_width={true}>
+            <Row fill_width={true}>
+              <Text
+                text="CURRENTLY GROWING"
+                text_size={:xs}
+                font={mono_font}
+                text_color={:secondary}
+                letter_spacing={1.4}
+              />
+              <Spacer />
+              <Text text="· ✦ ·" text_size={:sm} text_color={:primary} />
+            </Row>
+            <Spacer size={22} />
+            <Text
+              text="Blogs"
+              text_size={36.0}
+              font={regular_font}
+              font_weight="bold"
+              text_color={:on_surface}
+            />
+            <Text
+              text="Unfinished, unhurried, and saved before they wander off."
+              text_size={:base}
+              font={italic_font}
+              text_color={:muted}
+              line_height={1.4}
+              padding_top={:space_xs}
+            />
+            <Spacer size={24} />
+            {nav_button("wander in  →", :open_blogs)}
+          </Column>
+        </Box>
+        <Spacer size={24} />
       </Column>
     </Scroll>
     """
@@ -42,6 +93,13 @@ defmodule Bnana.HomeScreen do
     tap = {self(), tag}
     display_font = @mono_font
 
-    ~MOB(<Button text={label} text_color={:on_primary} text_size={:md} font={display_font} on_tap={tap} />)
+    ~MOB(<Button
+  text={label}
+  text_color={:on_primary}
+  text_size={:base}
+  font={display_font}
+  background={:primary}
+  on_tap={tap}
+/>)
   end
 end
