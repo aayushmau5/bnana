@@ -2,7 +2,7 @@ defmodule Bnana.BlogsScreen do
   @moduledoc "Lists in-progress blog drafts and resumes their editor."
   use Mob.Screen
 
-  alias Bnana.Blogs
+  alias Bnana.{Blogs, RemoteUI}
 
   @display_font "PlayfairDisplay-Regular"
   @italic_font "PlayfairDisplay-Italic"
@@ -20,16 +20,19 @@ defmodule Bnana.BlogsScreen do
 
     ~MOB"""
     <Column background={:background} fill_width={true} fill_height={true}>
-      {header()}
-      <Scroll background={:background} weight={1}>
-        <Column padding={:space_lg} fill_width={true}>
-          {intro()}
-          <Spacer size={20} />
-          {create_button()}
-          <Spacer size={24} />
-          {drafts}
-        </Column>
-      </Scroll>
+      {RemoteUI.header("Blogs")}
+      <Box background={:background} fill_width={true} fill_height={true} align="top">
+        <Scroll id="blogs_scroll" background={:background}>
+          <Column padding={:space_lg} fill_width={true}>
+            {intro()}
+            <Spacer size={20} />
+            {create_button()}
+            <Spacer size={24} />
+            {drafts}
+            <Spacer size={:space_xl} />
+          </Column>
+        </Scroll>
+      </Box>
     </Column>
     """
   end
@@ -59,7 +62,7 @@ defmodule Bnana.BlogsScreen do
   def handle_info({:tap, {:confirm_delete, id}}, socket) do
     case Enum.find(socket.assigns.drafts, &(&1.id == id)) do
       nil -> :ok
-      draft -> delete_draft(draft)
+      draft -> Blogs.delete_draft(draft)
     end
 
     {:noreply, reload(socket)}
@@ -76,54 +79,6 @@ defmodule Bnana.BlogsScreen do
     socket
     |> Mob.Socket.assign(:drafts, Blogs.list_drafts())
     |> Mob.Socket.assign(:pending_delete, nil)
-  end
-
-  defp delete_draft(draft) do
-    case Blogs.delete_draft(draft) do
-      {:ok, _draft} -> remove_cover(draft.cover_path)
-      {:error, _changeset} -> :ok
-    end
-  end
-
-  defp remove_cover(nil), do: :ok
-
-  defp remove_cover(path) do
-    covers_dir = Path.expand(Path.join(Bnana.Repo.data_dir(), "blog_covers"))
-    expanded = Path.expand(path)
-
-    if String.starts_with?(expanded, covers_dir <> "/"), do: File.rm(expanded)
-    :ok
-  end
-
-  defp header do
-    display_font = @display_font
-    tap = {self(), :back}
-
-    ~MOB"""
-    <Box background={:background} align="center" fill_width={true}>
-      <Text
-        text="Blogs"
-        text_size={:xl}
-        text_color={:on_surface}
-        font={display_font}
-        font_weight="bold"
-        padding_top={:space_sm}
-        padding_bottom={:space_sm}
-      />
-      <Row fill_width={true}>
-        <Icon
-          name="back"
-          text="Go back"
-          text_size={20.0}
-          text_color={:on_surface}
-          padding={:space_sm}
-          padding_left={10.0}
-          on_tap={tap}
-        />
-        <Spacer />
-      </Row>
-    </Box>
-    """
   end
 
   defp intro do
@@ -182,11 +137,8 @@ defmodule Bnana.BlogsScreen do
   defp draft_collection(drafts, pending_delete) do
     cards =
       drafts
-      |> Enum.with_index()
-      |> Enum.flat_map(fn {draft, index} ->
-        spacer = if index == 0, do: [], else: [~MOB(<Spacer size={12} />)]
-        spacer ++ [draft_card(draft, pending_delete)]
-      end)
+      |> Enum.map(&draft_card(&1, pending_delete))
+      |> Enum.intersperse(~MOB(<Spacer size={12} />))
 
     ~MOB"""
     <Column fill_width={true}>

@@ -4,7 +4,3 @@ import Config
 # discover it. The actual database path is configured at runtime in
 # Bnana.Repo.init/2 via the MOB_DATA_DIR environment variable.
 config :bnana, ecto_repos: [Bnana.Repo]
-
-# Wire the Repo into Mob.ScreenState so screens using `vsn:` get automatic
-# state persistence. Remove this line to disable screen state persistence.
-config :mob, :repo, Bnana.Repo

@@ -12,12 +12,7 @@ defmodule Bnana.Blogs do
 
   def create_draft(attrs \\ %{}) do
     %BlogDraft{}
-    |> BlogDraft.changeset(
-      Map.merge(
-        %{title: "", body: "", status: "wip", editor_mode: "edit", cursor_position: 0},
-        attrs
-      )
-    )
+    |> BlogDraft.changeset(attrs)
     |> Repo.insert()
   end
 

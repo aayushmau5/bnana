@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <style>
+      @font-face { font-family: Playfair; src: url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype"); }
+      @font-face { font-family: "Share Tech Mono"; src: url("../fonts/ShareTechMono-Regular.ttf") format("truetype"); }
+      :root { color-scheme: dark; --bg:#121212; --surface:#181818; --raised:#202020; --line:#2f363d; --text:#dbd7ca; --muted:#95938c; --green:#4d9375; --gold:#e6cc77; --red:#cb7676; --mono:"Share Tech Mono"; }
+      * { box-sizing: border-box; }
+      html, body { min-height:100%; margin:0; background:var(--bg); color:var(--text); }
+      body { padding:calc(12px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); font-family:Playfair,serif; }
+      nav { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+      button { min-height:44px; border:0; border-radius:9px; font-family:var(--mono); font-size:14px; }
+      #back { width:48px; background:var(--surface); color:var(--gold); }
+      #save { margin-left:auto; padding:0 18px; background:var(--green); color:#121212; }
+      #save[disabled] { opacity:.6; }
+      #state { color:var(--muted); font-family:var(--mono); font-size:12px; }
+      h1 { margin:0 0 24px; font-size:38px; line-height:1.05; }
+      label { display:block; margin:18px 0 7px; color:var(--muted); font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+      input, textarea, select { width:100%; border:1px solid var(--line); border-radius:10px; outline:none; background:var(--surface); color:var(--text); }
+      input { padding:14px; font:23px Playfair,serif; }
+      textarea { min-height:55vh; padding:15px; resize:vertical; font-family:var(--mono); font-size:16px; line-height:1.65; caret-color:var(--green); }
+      select { min-height:48px; padding:0 12px; font-family:var(--mono); font-size:14px; }
+      .error { color:var(--red) !important; }
+      [hidden] { display:none !important; }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <button id="back" type="button">←</button>
+      <span id="state">ready</span>
+      <button id="save" type="button">Save</button>
+    </nav>
+    <h1 id="heading">Editor</h1>
+    <section id="title-wrap" hidden>
+      <label for="title">Title</label>
+      <input id="title" autocomplete="off" placeholder="Give it a name" />
+    </section>
+    <section id="expiry-wrap" hidden>
+      <label for="expiry">Keep it for</label>
+      <select id="expiry"><option value="hour">One hour</option><option value="day">One day</option><option value="week">One week</option></select>
+    </section>
+    <label id="body-label" for="body">Content</label>
+    <textarea id="body" spellcheck="true" placeholder="Start here…"></textarea>
+    <script>
+      (() => {
+        const title = document.getElementById("title");
+        const body = document.getElementById("body");
+        const expiry = document.getElementById("expiry");
+        const save = document.getElementById("save");
+        const state = document.getElementById("state");
+        const withMob = (callback) => window.mob && typeof window.mob.send === "function" ? callback(window.mob) : setTimeout(() => withMob(callback), 30);
+        const send = (event) => withMob((mob) => mob.send({event, title:title.value, body:body.value, expiry:expiry.value}));
+        const changed = () => { state.textContent = "unsaved"; state.className = ""; send("change"); };
+        title.addEventListener("input", changed); body.addEventListener("input", changed); expiry.addEventListener("change", changed);
+        document.getElementById("back").addEventListener("click", () => send("back"));
+        save.addEventListener("click", () => send("save"));
+        withMob((mob) => {
+          mob.onMessage((message) => {
+            if (message.event === "init") {
+              document.getElementById("heading").textContent = message.heading || "Editor";
+              document.getElementById("body-label").textContent = message.body_label || "Content";
+              document.getElementById("title-wrap").hidden = !message.show_title;
+              document.getElementById("expiry-wrap").hidden = !message.show_expiry;
+              title.value = message.title || ""; body.value = message.body || ""; expiry.value = message.expiry || "day";
+            }
+            if (message.event === "save_state") {
+              const saving = message.state === "saving";
+              save.disabled = saving;
+              state.textContent = saving ? "saving…" : (message.message || message.state);
+              state.className = message.state === "error" ? "error" : "";
+            }
+          });
+          mob.send({event:"ready"});
+        });
+      })();
+    </script>
+  </body>
+</html>

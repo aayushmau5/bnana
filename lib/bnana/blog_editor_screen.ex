@@ -7,7 +7,7 @@ defmodule Bnana.BlogEditorScreen do
   @autosave_delay 450
 
   def mount(params, _session, socket) do
-    draft = Blogs.get_draft!(draft_id(params))
+    draft = Blogs.get_draft!(params.draft_id)
 
     {:ok,
      socket
@@ -166,13 +166,7 @@ defmodule Bnana.BlogEditorScreen do
   defp send_to_editor(socket, _message), do: socket
 
   defp editor_url do
-    path =
-      case System.get_env("MOB_BEAMS_DIR") do
-        nil -> Application.app_dir(:bnana, "priv/editor/index.html")
-        beams_dir -> Path.join([beams_dir, "priv", "editor", "index.html"])
-      end
-
-    "file://#{path}"
+    "file://#{Bnana.App.priv_path("editor/index.html")}"
   end
 
   defp binary_value(value, _fallback) when is_binary(value), do: value
@@ -186,7 +180,4 @@ defmodule Bnana.BlogEditorScreen do
 
   defp cancel_timer(nil), do: :ok
   defp cancel_timer(token), do: Process.cancel_timer(token)
-
-  defp draft_id(%{draft_id: id}), do: id
-  defp draft_id(%{"draft_id" => id}), do: id
 end

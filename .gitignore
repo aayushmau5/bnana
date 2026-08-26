@@ -1,4 +1,5 @@
 /_build/
+/priv/cacerts.pem
 /deps/
 /doc/
 /.fetch

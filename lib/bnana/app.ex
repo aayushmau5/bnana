@@ -23,12 +23,14 @@ defmodule Bnana.App do
     # captive portals, search-domain expansion) call `Mob.DNS.resolve/1`
     # for those specific hostnames here too. Both paths compose.
     Mob.DNS.configure_pure_beam()
+    Mob.Certs.load_cacerts!(priv_path("cacerts.pem"))
 
     {:ok, _} = Application.ensure_all_started(:ecto_sqlite3)
     {:ok, _} = Bnana.Repo.start_link()
+    {:ok, _} = Bnana.PhoenixClient.start_link()
 
     Ecto.Migrator.with_repo(Bnana.Repo, fn repo ->
-      Ecto.Migrator.run(repo, migrations_dir(), :up, all: true)
+      Ecto.Migrator.run(repo, priv_path("repo/migrations"), :up, all: true)
     end)
 
     Mob.Screen.start_root(Bnana.HomeScreen)
@@ -54,10 +56,10 @@ defmodule Bnana.App do
   # (mkdir-as-root creates system:system drwxrwx--x dirs that the app process
   # can traverse but not list, breaking Path.wildcard). Here we read MOB_BEAMS_DIR
   # and pass the explicit path to Ecto.Migrator.run/4.
-  defp migrations_dir do
+  def priv_path(relative_path) do
     case System.get_env("MOB_BEAMS_DIR") do
-      nil -> Application.app_dir(:bnana, "priv/repo/migrations")
-      beams_dir -> Path.join([beams_dir, "priv", "repo", "migrations"])
+      nil -> Application.app_dir(:bnana, Path.join("priv", relative_path))
+      beams_dir -> Path.join([beams_dir, "priv", relative_path])
     end
   end
 end
