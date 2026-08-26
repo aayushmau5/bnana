@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <style>
-      @font-face { font-family: Playfair; src: url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype"); }
-      @font-face { font-family: "Share Tech Mono"; src: url("../fonts/ShareTechMono-Regular.ttf") format("truetype"); }
-      :root { color-scheme: dark; --bg:#121212; --surface:#181818; --raised:#202020; --line:#2f363d; --text:#dbd7ca; --muted:#95938c; --green:#4d9375; --gold:#e6cc77; --red:#cb7676; --mono:"Share Tech Mono"; }
+      @font-face { font-family: Playfair; src: local("PlayfairDisplay-Regular"), url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype"); }
+      @font-face { font-family: "Share Tech Mono"; src: local("ShareTechMono-Regular"), url("../fonts/ShareTechMono-Regular.ttf") format("truetype"); }
+      :root { color-scheme: dark; --bg:#121212; --surface:#181818; --raised:#202020; --line:#2f363d; --text:#dbd7ca; --muted:#95938c; --green:#4d9375; --gold:#e6cc77; --red:#cb7676; --mono:"Share Tech Mono",ui-monospace,monospace; --serif:Playfair,Georgia,serif; }
       * { box-sizing: border-box; }
       html, body { min-height:100%; margin:0; background:var(--bg); color:var(--text); }
-      body { padding:calc(12px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); font-family:Playfair,serif; }
+      body { padding:calc(12px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); font-family:var(--serif); }
       nav { display:grid; grid-template-columns:44px 1fr 84px; align-items:center; gap:6px; margin-bottom:24px; padding:5px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
       button { min-height:42px; border:0; border-radius:8px; font-family:var(--mono); font-size:14px; }
       #back { background:transparent; color:var(--gold); font-size:20px; }
@@ -22,7 +22,7 @@
       label { color:var(--muted); font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
       input, textarea, select { display:block; width:100%; margin:0; border:1px solid var(--line); border-radius:10px; outline:none; background:var(--surface); color:var(--text); }
       input:focus, textarea:focus, select:focus { border-color:var(--green); }
-      input { min-height:52px; padding:12px 14px; font:23px Playfair,serif; }
+      input { min-height:52px; padding:12px 14px; font:23px var(--serif); }
       textarea { min-height:50dvh; padding:14px; resize:none; font-family:var(--mono); font-size:16px; line-height:1.65; caret-color:var(--green); }
       select { min-height:52px; padding:0 14px; font-family:var(--mono); font-size:14px; }
       .error { color:var(--red) !important; }

@@ -6,18 +6,18 @@
     <style>
       @font-face {
         font-family: "Playfair";
-        src: url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype");
+        src: local("PlayfairDisplay-Regular"), url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype");
       }
 
       @font-face {
         font-family: "Playfair";
-        src: url("../fonts/PlayfairDisplay-Italic.ttf") format("truetype");
+        src: local("PlayfairDisplay-Italic"), url("../fonts/PlayfairDisplay-Italic.ttf") format("truetype");
         font-style: italic;
       }
 
       @font-face {
         font-family: "Share Tech Mono";
-        src: url("../fonts/ShareTechMono-Regular.ttf") format("truetype");
+        src: local("ShareTechMono-Regular"), url("../fonts/ShareTechMono-Regular.ttf") format("truetype");
       }
 
       :root {
@@ -109,17 +109,21 @@
       label[for="body"] { margin-top: 18px; }
 
       .title-input {
+        display: block;
         width: 100%;
+        min-height: 48px;
         padding: 4px 0 12px;
+        overflow: hidden;
+        resize: none;
         border: 0;
         border-bottom: 1px solid var(--line);
         outline: none;
         background: transparent;
         color: var(--text);
         font-family: var(--serif);
-        font-size: clamp(32px, 9vw, 52px);
+        font-size: clamp(28px, 7.5vw, 40px);
         font-weight: 700;
-        line-height: 1.05;
+        line-height: 1.12;
       }
 
       .title-input::placeholder, .body-input::placeholder {
@@ -317,7 +321,7 @@
 
       <section id="editor-pane">
         <label class="field-label" for="title">Heading</label>
-        <input class="title-input" id="title" type="text" placeholder="Untitled thought" autocomplete="off" />
+        <textarea class="title-input" id="title" rows="1" placeholder="Untitled thought" autocomplete="off"></textarea>
 
         <label class="field-label" for="body">Markdown</label>
         <textarea class="body-input" id="body" placeholder="Start wherever you are…" spellcheck="true"></textarea>
@@ -377,6 +381,11 @@
 
         function send(payload) {
           withMob((mob) => mob.send(payload));
+        }
+
+        function resizeTitle() {
+          title.style.height = "auto";
+          title.style.height = `${title.scrollHeight}px`;
         }
 
         function notifyChange() {
@@ -601,7 +610,7 @@
           document.getElementById("component-grid").appendChild(button);
         }
 
-        title.addEventListener("input", notifyChange);
+        title.addEventListener("input", () => { resizeTitle(); notifyChange(); });
         body.addEventListener("input", notifyChange);
         body.addEventListener("blur", sendViewState);
         editTab.addEventListener("click", () => setMode("edit"));
@@ -615,6 +624,7 @@
             if (message.event === "init") {
               title.value = message.title || "";
               body.value = message.body || "";
+              resizeTitle();
               resizeBody();
               setMode(message.mode || "edit", false);
               const cursor = Math.min(Number(message.cursor || 0), body.value.length);
