@@ -214,7 +214,7 @@ defmodule Bnana.RemoteEditorScreen do
   defp body_label(_), do: "Content"
 
   defp editor_url do
-    "file://#{Bnana.App.priv_path("remote_editor/index.html")}"
+    "file://#{Bnana.App.priv_path("webviews/remote_editor/index.html")}"
   end
 
   defp binary(value) when is_binary(value), do: value

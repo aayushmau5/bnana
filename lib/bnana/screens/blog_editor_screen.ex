@@ -166,7 +166,7 @@ defmodule Bnana.BlogEditorScreen do
   defp send_to_editor(socket, _message), do: socket
 
   defp editor_url do
-    "file://#{Bnana.App.priv_path("editor/index.html")}"
+    "file://#{Bnana.App.priv_path("webviews/blog_editor/index.html")}"
   end
 
   defp binary_value(value, _fallback) when is_binary(value), do: value
