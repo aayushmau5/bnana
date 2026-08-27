@@ -12,6 +12,8 @@ defmodule Bnana.App do
   def on_start do
     Mob.Theme.set(Bnana.Theme)
 
+    {:ok, _} = Application.ensure_all_started(:req)
+
     # Configure BEAM's DNS path so Req / Finch / Mint / `gen_tcp:connect/3`
     # with a hostname work on iOS without per-host setup. Flips the lookup
     # chain from the iOS-broken `:native` (inet_gethost port program) path
@@ -33,7 +35,8 @@ defmodule Bnana.App do
       Ecto.Migrator.run(repo, priv_path("repo/migrations"), :up, all: true)
     end)
 
-    Mob.Screen.start_root(Bnana.HomeScreen)
+    {:ok, _screen} = Mob.Screen.start_root(Bnana.HomeScreen)
+    Bnana.DeepLinks.consume()
     Mob.Dist.ensure_started(node: :"bnana_ios@127.0.0.1", cookie: :mob_secret)
   end
 

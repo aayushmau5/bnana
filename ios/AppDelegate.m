@@ -25,6 +25,54 @@ static void* beam_thread(void* arg) {
     return NULL;
 }
 
+static BOOL bnana_store_capture_url(NSURL* incomingURL) {
+    NSURLComponents* incoming = [NSURLComponents componentsWithURL:incomingURL
+                                           resolvingAgainstBaseURL:NO];
+    if (![incoming.scheme.lowercaseString isEqualToString:@"bnana"] ||
+        ![incoming.host.lowercaseString isEqualToString:@"capture"]) {
+        return NO;
+    }
+
+    NSString* captured = nil;
+    for (NSURLQueryItem* item in incoming.queryItems) {
+        if ([item.name isEqualToString:@"url"]) {
+            captured = item.value;
+            break;
+        }
+    }
+
+    NSURL* url = captured ? [NSURL URLWithString:captured] : nil;
+    NSString* scheme = url.scheme.lowercaseString;
+    if (captured.length == 0 || captured.length > 16384 ||
+        !([scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"]) ||
+        url.host.length == 0) {
+        return NO;
+    }
+
+    NSArray<NSString*>* paths =
+        NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString* directory = paths.firstObject;
+    if (!directory) return NO;
+
+    NSError* error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:directory
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+        NSLog(@"[Bnana] Could not create capture directory: %@", error);
+        return NO;
+    }
+
+    NSString* path = [directory stringByAppendingPathComponent:@".pending_capture_url"];
+    if (![captured writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
+        NSLog(@"[Bnana] Could not store captured URL: %@", error);
+        return NO;
+    }
+
+    return YES;
+}
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 @property (strong, nonatomic) UIWindow *window;
 @end
@@ -33,6 +81,9 @@ static void* beam_thread(void* arg) {
 
 - (BOOL)application:(UIApplication*)app
     didFinishLaunchingWithOptions:(NSDictionary*)opts {
+
+    NSURL* launchURL = opts[UIApplicationLaunchOptionsURLKey];
+    if (launchURL) bnana_store_capture_url(launchURL);
 
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
 
@@ -52,6 +103,12 @@ static void* beam_thread(void* arg) {
     pthread_detach(t);
 
     return YES;
+}
+
+- (BOOL)application:(UIApplication*)app
+            openURL:(NSURL*)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options {
+    return bnana_store_capture_url(url);
 }
 
 // Holds an orientation lock. UIKit consults this window-level method in

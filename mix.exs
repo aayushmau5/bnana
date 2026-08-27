@@ -24,6 +24,7 @@ defmodule Bnana.MixProject do
       {:mob_dev, "~> 0.6", only: :dev, runtime: false},
       {:ecto_sqlite3, "~> 0.18"},
       {:phoenix_socket_client, "~> 0.8.2"},
+      {:req, "~> 0.7"},
       {:castore, "~> 1.0"},
       # Code quality — Credo + ex_slop (catches AI-generated patterns
       # like blanket rescue, narrator docs, redundant Enum chains, etc).

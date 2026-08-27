@@ -200,6 +200,7 @@ defmodule Bnana.PhoenixClient do
 
   def handle_info({:mob_device, event}, state)
       when event in [:will_enter_foreground, :did_become_active] do
+    if event == :did_become_active, do: Bnana.DeepLinks.consume()
     state = %{state | foreground?: true}
     send(self(), :ensure_connection)
     {:noreply, state}

@@ -86,13 +86,17 @@ defmodule Bnana.HomeScreen do
           padding={:space_lg}
         >
           <Column fill_width={true}>
-            <Text
-              text="PHOENIX WINDOW"
-              text_size={:xs}
-              font={mono_font}
-              text_color={:secondary}
-              letter_spacing={1.4}
-            />
+            <Row fill_width={true}>
+              <Text
+                text="PHOENIX WINDOW"
+                text_size={:xs}
+                font={mono_font}
+                text_color={:secondary}
+                letter_spacing={1.4}
+              />
+              <Spacer />
+              <Text text="· ❖ ·" text_size={:sm} text_color={:primary} />
+            </Row>
             <Spacer size={16} />
             <Text
               text="Site tools"
@@ -113,6 +117,46 @@ defmodule Bnana.HomeScreen do
             {nav_button("open the window  →", :open_phoenix)}
           </Column>
         </Box>
+        <Spacer size={16} />
+        <Box
+          background={:surface}
+          border_color={:border}
+          border_width={1}
+          corner_radius={:radius_lg}
+          padding={:space_lg}
+        >
+          <Column fill_width={true}>
+            <Row fill_width={true}>
+              <Text
+                text="POCKET TRAIL"
+                text_size={:xs}
+                font={mono_font}
+                text_color={:secondary}
+                letter_spacing={1.4}
+              />
+              <Spacer />
+              <Text text="· ↝ ·" text_size={:sm} text_color={:primary} />
+            </Row>
+            <Spacer size={16} />
+            <Text
+              text="Saved links"
+              text_size={32.0}
+              font={regular_font}
+              font_weight="bold"
+              text_color={:on_surface}
+            />
+            <Text
+              text="A quiet trail back to things worth keeping."
+              text_size={:base}
+              font={italic_font}
+              text_color={:muted}
+              line_height={1.4}
+              padding_top={:space_xs}
+            />
+            <Spacer size={20} />
+            {nav_button("follow the trail  →", :open_saved_links)}
+          </Column>
+        </Box>
         <Spacer size={24} />
       </Column>
     </Scroll>
@@ -125,6 +169,10 @@ defmodule Bnana.HomeScreen do
 
   def handle_info({:tap, :open_phoenix}, socket) do
     {:noreply, Mob.Socket.push_screen(socket, Bnana.PhoenixScreen)}
+  end
+
+  def handle_info({:tap, :open_saved_links}, socket) do
+    {:noreply, Mob.Socket.push_screen(socket, Bnana.SavedLinksScreen)}
   end
 
   def handle_info(_message, socket), do: {:noreply, socket}
