@@ -7,6 +7,7 @@ defmodule Bnana.SavedLink do
     field(:title, :string, default: "")
     field(:incentives, :map)
     field(:incentives_fetched_at, :utc_datetime_usec)
+    field(:read_at, :utc_datetime_usec)
 
     timestamps(type: :utc_datetime_usec)
   end

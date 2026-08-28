@@ -118,6 +118,59 @@ defmodule Bnana.LinksFlowTest do
     assert navigated_to(view) == IncentivesScreen
   end
 
+  test "swiping a saved link reveals copy and delete actions" do
+    {:ok, link} = Links.create_link(%{title: "An article", url: "https://example.com/article"})
+
+    view =
+      Bnana.SavedLinksScreen
+      |> mount_screen()
+      |> render_info({:swipe_left, {:reveal_link_actions, link.id}})
+
+    assert assigns(view).revealed_link_id == link.id
+    assert find(view, :button, id: "link_read_#{link.id}")
+    assert find(view, :button, id: "link_copy_#{link.id}")
+    assert find(view, :icon, name: "trash")
+
+    view = render_info(view, {:swipe_right, :close_link_actions})
+    assert is_nil(assigns(view).revealed_link_id)
+    refute find(view, :button, id: "link_copy_#{link.id}")
+  end
+
+  test "a saved link can be marked read and unread" do
+    {:ok, link} = Links.create_link(%{title: "An article", url: "https://example.com/article"})
+
+    view =
+      Bnana.SavedLinksScreen
+      |> mount_screen()
+      |> render_info({:tap, {:set_link_read, link.id, true}})
+
+    assert Links.get_link(link.id).read_at
+    assert text(view) =~ "✓ READ"
+
+    view = render_info(view, {:tap, {:set_link_read, link.id, false}})
+
+    assert is_nil(Links.get_link(link.id).read_at)
+    refute text(view) =~ "✓ READ"
+  end
+
+  test "a revealed link is deleted after confirmation" do
+    {:ok, link} = Links.create_link(%{title: "An article", url: "https://example.com/article"})
+
+    view =
+      Bnana.SavedLinksScreen
+      |> mount_screen()
+      |> render_info({:swipe_left, {:reveal_link_actions, link.id}})
+      |> render_info({:tap, {:delete_link, link.id}})
+
+    assert text(view) =~ "Delete this link?"
+
+    view = render_info(view, {:tap, {:confirm_delete, link.id}})
+
+    assert Links.list_links() == []
+    assert is_nil(assigns(view).revealed_link_id)
+    assert is_nil(assigns(view).pending_delete)
+  end
+
   test "saved incentives render without another request" do
     {:ok, link} = Links.create_link(%{title: "An article", url: "https://example.com/article"})
 

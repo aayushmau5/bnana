@@ -27,6 +27,14 @@ defmodule Bnana.Links do
 
   def get_link(id), do: Repo.get(SavedLink, id)
 
+  def delete_link(%SavedLink{} = link), do: Repo.delete(link)
+
+  def set_read(%SavedLink{} = link, read?) when is_boolean(read?) do
+    link
+    |> Ecto.Changeset.change(read_at: if(read?, do: DateTime.utc_now(), else: nil))
+    |> Repo.update()
+  end
+
   def cache_incentives(%SavedLink{} = link, incentives) when is_map(incentives) do
     link
     |> Ecto.Changeset.change(
