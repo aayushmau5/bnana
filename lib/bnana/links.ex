@@ -25,6 +25,17 @@ defmodule Bnana.Links do
     |> Repo.insert()
   end
 
+  def get_link(id), do: Repo.get(SavedLink, id)
+
+  def cache_incentives(%SavedLink{} = link, incentives) when is_map(incentives) do
+    link
+    |> Ecto.Changeset.change(
+      incentives: incentives,
+      incentives_fetched_at: DateTime.utc_now()
+    )
+    |> Repo.update()
+  end
+
   def fetch_title(url) do
     with host when is_binary(host) <- URI.parse(url).host,
          :ok <- resolve_host(host),
@@ -71,8 +82,12 @@ defmodule Bnana.Links do
 
   defp resolve_host(host) do
     case resolve_with_retries(host, @dns_retry_attempts) do
-      {:ok, _ip} -> :ok
-      {:error, :nif_not_loaded} -> :ok
+      {:ok, _ip} ->
+        :ok
+
+      {:error, :nif_not_loaded} ->
+        :ok
+
       {:error, reason} ->
         Logger.warning("Bnana.Links: DNS resolution failed for #{host}: #{inspect(reason)}")
         :error

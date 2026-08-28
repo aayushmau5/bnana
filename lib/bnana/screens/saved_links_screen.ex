@@ -45,6 +45,10 @@ defmodule Bnana.SavedLinksScreen do
     {:noreply, socket}
   end
 
+  def handle_info({:tap, {:show_incentives, link_id}}, socket) do
+    {:noreply, Mob.Socket.push_screen(socket, Bnana.IncentivesScreen, %{link_id: link_id})}
+  end
+
   def handle_info(_message, socket), do: {:noreply, socket}
 
   defp link_content([]) do
@@ -69,7 +73,9 @@ defmodule Bnana.SavedLinksScreen do
 
   defp link_card(link) do
     title = if link.title in [nil, ""], do: link.url, else: link.title
-    tap = {self(), {:open_link, link.url}}
+    open = {self(), {:open_link, link.url}}
+    incentives = {self(), {:show_incentives, link.id}}
+    incentives_id = "link_incentives_#{link.id}"
     display_font = @display_font
     ui_font = @ui_font
 
@@ -81,7 +87,6 @@ defmodule Bnana.SavedLinksScreen do
       corner_radius={:radius_md}
       padding={:space_md}
       fill_width={true}
-      on_tap={tap}
     >
       <Column fill_width={true}>
         <Row fill_width={true}>
@@ -102,6 +107,29 @@ defmodule Bnana.SavedLinksScreen do
           text_color={:muted}
           padding_top={:space_xs}
         />
+        <Spacer size={14} />
+        <Row fill_width={true}>
+          <Button
+            id={incentives_id}
+            text="Incentives"
+            text_size={:sm}
+            font={ui_font}
+            background={:primary}
+            text_color={:on_primary}
+            weight={1}
+            on_tap={incentives}
+          />
+          <Spacer size={10} />
+          <Button
+            text="Read  ↗"
+            text_size={:sm}
+            font={ui_font}
+            background={:surface_raised}
+            text_color={:on_surface}
+            weight={1}
+            on_tap={open}
+          />
+        </Row>
       </Column>
     </Box>
     """

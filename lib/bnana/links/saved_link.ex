@@ -5,6 +5,8 @@ defmodule Bnana.SavedLink do
   schema "saved_links" do
     field(:url, :string)
     field(:title, :string, default: "")
+    field(:incentives, :map)
+    field(:incentives_fetched_at, :utc_datetime_usec)
 
     timestamps(type: :utc_datetime_usec)
   end

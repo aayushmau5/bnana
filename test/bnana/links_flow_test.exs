@@ -1,7 +1,7 @@
 defmodule Bnana.LinksFlowTest do
   use Mob.ScreenCase, async: false
 
-  alias Bnana.{DeepLinks, HomeScreen, LinkCaptureScreen, Links, Repo, SavedLink}
+  alias Bnana.{DeepLinks, HomeScreen, IncentivesScreen, LinkCaptureScreen, Links, Repo, SavedLink}
 
   setup_all do
     previous_data_dir = System.get_env("MOB_DATA_DIR")
@@ -105,5 +105,35 @@ defmodule Bnana.LinksFlowTest do
 
     assert [%SavedLink{title: "An article", url: "https://example.com/article"}] =
              Links.list_links()
+  end
+
+  test "a saved link opens its incentives screen" do
+    {:ok, link} = Links.create_link(%{title: "An article", url: "https://example.com/article"})
+
+    view =
+      Bnana.SavedLinksScreen
+      |> mount_screen()
+      |> render_info({:tap, {:show_incentives, link.id}})
+
+    assert navigated_to(view) == IncentivesScreen
+  end
+
+  test "saved incentives render without another request" do
+    {:ok, link} = Links.create_link(%{title: "An article", url: "https://example.com/article"})
+
+    incentives = %{
+      "verdict" => "read",
+      "reason" => "It rewards the time.",
+      "incentives" => [
+        %{"hook" => "A useful idea", "takeaway" => "Something concrete to remember."}
+      ]
+    }
+
+    assert {:ok, _link} = Links.cache_incentives(link, incentives)
+
+    view = mount_screen(IncentivesScreen, %{link_id: link.id})
+
+    assert text(view) =~ "It rewards the time."
+    assert text(view) =~ "A useful idea"
   end
 end
