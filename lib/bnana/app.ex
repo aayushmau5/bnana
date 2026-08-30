@@ -30,6 +30,7 @@ defmodule Bnana.App do
     {:ok, _} = Application.ensure_all_started(:ecto_sqlite3)
     {:ok, _} = Bnana.Repo.start_link()
     {:ok, _} = Bnana.PhoenixClient.start_link()
+    {:ok, _} = Bnana.WidgetAnalyticsCache.start_link()
 
     Ecto.Migrator.with_repo(Bnana.Repo, fn repo ->
       Ecto.Migrator.run(repo, priv_path("repo/migrations"), :up, all: true)

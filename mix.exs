@@ -44,7 +44,7 @@ defmodule Bnana.MixProject do
       watch: ["mob.watch"],
       icon: ["mob.icon"],
       ios: ["mob.deploy --ios"],
-      "ios.native": ["mob.deploy --native --ios"],
+      "ios.native": ["bnana.widget.deploy"],
       android: ["mob.deploy --android"],
       "android.native": ["mob.deploy --native --android"]
     ]

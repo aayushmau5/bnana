@@ -150,6 +150,7 @@ pub fn build(b: *std.Build) void {
             swift_run.addFileArg(.{ .cwd_relative = source });
         }
     }
+    swift_run.addFileArg(.{ .cwd_relative = b.fmt("{s}/BnanaWidgetReloader.swift", .{project_ios_dir}) });
     // Plugin-contributed Swift sources compile in the same step so the
     // -emit-objc-header pass sees everything that needs to bridge to ObjC.
     if (plugin_swift_files.len > 0) {
@@ -632,6 +633,7 @@ fn addLink(b: *std.Build, step: *std.Build.Step, opts: LinkOptions) void {
         "CoreGraphics",
         "QuartzCore",
         "SwiftUI",
+        "WidgetKit",
     };
     for (frameworks_base) |fw| {
         run.addArgs(&.{ "-Xlinker", "-framework", "-Xlinker", fw });

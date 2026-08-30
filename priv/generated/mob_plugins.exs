@@ -4,11 +4,11 @@
 # Regenerated whenever `config :mob, :plugins` changes (the deploy/regen hook).
 %{
   nifs: [],
-  settings: [],
-  screens: [],
-  notification_handlers: [],
-  lifecycle: [],
   composites: [],
   default_style: nil,
+  lifecycle: [],
+  notification_handlers: [],
+  screens: [],
+  settings: [],
   styles: []
 }
