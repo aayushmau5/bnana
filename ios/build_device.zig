@@ -220,6 +220,7 @@ pub fn build(b: *std.Build) void {
     // --- ObjC via xcrun cc -----------------------------------------------------
     const mob_beam_flags = &[_][]const u8{
         "-DMOB_BUNDLE_OTP",
+        "-DMOB_RELEASE",
         b.fmt("-DERTS_VSN=\"{s}\"", .{erts_vsn}),
         b.fmt("-DOTP_RELEASE=\"{s}\"", .{otp_release}),
     };

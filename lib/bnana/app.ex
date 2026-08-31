@@ -38,7 +38,6 @@ defmodule Bnana.App do
 
     {:ok, _screen} = Mob.Screen.start_root(Bnana.HomeScreen)
     Bnana.DeepLinks.consume()
-    Mob.Dist.ensure_started(node: :"bnana_ios@127.0.0.1", cookie: :mob_secret)
   end
 
   # Returns the path to the migrations directory for the current environment.
