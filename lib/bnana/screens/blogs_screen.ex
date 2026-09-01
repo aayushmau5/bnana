@@ -16,6 +16,7 @@ defmodule Bnana.BlogsScreen do
   end
 
   def render(assigns) do
+    allow_auto_lock()
     drafts = draft_collection(assigns.drafts, assigns.pending_delete)
 
     ~MOB"""
@@ -79,6 +80,12 @@ defmodule Bnana.BlogsScreen do
     socket
     |> Mob.Socket.assign(:drafts, Blogs.list_drafts())
     |> Mob.Socket.assign(:pending_delete, nil)
+  end
+
+  # Mob handles the native edge-back gesture before the editor sees it, so the
+  # parent render is the one reliable place to release the app-scoped idle timer.
+  defp allow_auto_lock do
+    if Process.whereis(:mob_screen) == self(), do: Mob.Device.keep_awake(false)
   end
 
   defp intro do

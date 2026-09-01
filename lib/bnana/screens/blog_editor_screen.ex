@@ -7,6 +7,7 @@ defmodule Bnana.BlogEditorScreen do
   @autosave_delay 450
 
   def mount(params, _session, socket) do
+    keep_awake()
     draft = Blogs.get_draft!(params.draft_id)
 
     {:ok,
@@ -29,9 +30,7 @@ defmodule Bnana.BlogEditorScreen do
   end
 
   def handle_info({:tap, :back}, socket) do
-    socket = persist_now(socket)
-    send(self(), :refresh_drafts)
-    {:noreply, Mob.Socket.pop_screen(socket)}
+    {:noreply, close_editor(socket)}
   end
 
   def handle_info({:webview, :message, json}, socket) when is_binary(json) do
@@ -54,7 +53,13 @@ defmodule Bnana.BlogEditorScreen do
   def handle_info({:persist_draft, _stale_token}, socket), do: {:noreply, socket}
 
   def handle_info({:mob_device, :did_enter_background}, socket) do
+    Mob.Device.keep_awake(false)
     {:noreply, persist_now(socket)}
+  end
+
+  def handle_info({:mob_device, :did_become_active}, socket) do
+    Mob.Device.keep_awake(true)
+    {:noreply, socket}
   end
 
   def handle_info(_message, socket), do: {:noreply, socket}
@@ -97,9 +102,7 @@ defmodule Bnana.BlogEditorScreen do
   end
 
   defp handle_editor_message(%{"event" => "back"}, socket) do
-    socket = persist_now(socket)
-    send(self(), :refresh_drafts)
-    {:noreply, Mob.Socket.pop_screen(socket)}
+    {:noreply, close_editor(socket)}
   end
 
   defp handle_editor_message(_message, socket), do: {:noreply, socket}
@@ -164,6 +167,20 @@ defmodule Bnana.BlogEditorScreen do
   end
 
   defp send_to_editor(socket, _message), do: socket
+
+  defp close_editor(socket) do
+    Mob.Device.keep_awake(false)
+    socket = persist_now(socket)
+    send(self(), :refresh_drafts)
+    Mob.Socket.pop_screen(socket)
+  end
+
+  defp keep_awake do
+    if Process.whereis(:mob_screen) == self() do
+      Mob.Device.subscribe(:app)
+      Mob.Device.keep_awake(true)
+    end
+  end
 
   defp editor_url do
     "file://#{Bnana.App.priv_path("webviews/blog_editor/index.html")}"
