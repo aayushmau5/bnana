@@ -71,6 +71,15 @@ defmodule Bnana.BlogsFlowTest do
     assert Blogs.list_drafts() == []
   end
 
+  test "dashboard offers to save each draft to Bin" do
+    {:ok, draft} = Blogs.create_draft(%{title: "Keep moving", body: "A copy worth keeping."})
+
+    view = mount_screen(BlogsScreen)
+
+    assert_renderable(view, extra: [:icon])
+    assert find(view, :button, id: "save_to_bin_#{draft.id}")
+  end
+
   test "editor debounces a change and persists the resumed position" do
     {:ok, draft} = Blogs.create_draft()
     view = mount_screen(BlogEditorScreen, %{draft_id: draft.id})

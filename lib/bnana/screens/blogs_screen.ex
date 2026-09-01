@@ -2,7 +2,7 @@ defmodule Bnana.BlogsScreen do
   @moduledoc "Lists in-progress blog drafts and resumes their editor."
   use Mob.Screen
 
-  alias Bnana.{Blogs, RemoteUI}
+  alias Bnana.{Blogs, PhoenixClient, RemoteUI}
 
   @display_font "PlayfairDisplay-Regular"
   @italic_font "PlayfairDisplay-Italic"
@@ -56,6 +56,22 @@ defmodule Bnana.BlogsScreen do
     {:noreply, Mob.Socket.push_screen(socket, Bnana.BlogEditorScreen, %{draft_id: id})}
   end
 
+  def handle_info({:tap, {:save_to_bin, id}}, socket) do
+    case Enum.find(socket.assigns.drafts, &(&1.id == id)) do
+      nil ->
+        {:noreply, socket}
+
+      draft ->
+        PhoenixClient.request("bin", "new", %{
+          "title" => display_title(draft.title),
+          "content" => draft.body || "",
+          "expire" => %{"time" => 7, "unit" => "day"}
+        })
+
+        {:noreply, Mob.Alert.toast(socket, "Saving to Bin…")}
+    end
+  end
+
   def handle_info({:tap, {:delete_draft, id}}, socket) do
     {:noreply, Mob.Socket.assign(socket, :pending_delete, id)}
   end
@@ -71,6 +87,18 @@ defmodule Bnana.BlogsScreen do
 
   def handle_info({:tap, :cancel_delete}, socket) do
     {:noreply, Mob.Socket.assign(socket, :pending_delete, nil)}
+  end
+
+  def handle_info({:phoenix_reply, _ref, "bin", "new", {:ok, %{"status" => "ERROR"}}}, socket) do
+    {:noreply, Mob.Alert.toast(socket, "Could not save to Bin")}
+  end
+
+  def handle_info({:phoenix_reply, _ref, "bin", "new", {:ok, _response}}, socket) do
+    {:noreply, Mob.Alert.toast(socket, "Saved to Bin")}
+  end
+
+  def handle_info({:phoenix_reply, _ref, "bin", "new", {:error, _reason}}, socket) do
+    {:noreply, Mob.Alert.toast(socket, "Could not save to Bin")}
   end
 
   def handle_info(:refresh_drafts, socket), do: {:noreply, reload(socket)}
@@ -159,12 +187,23 @@ defmodule Bnana.BlogsScreen do
 
     ~MOB"""
     <Box background={:surface} padding={:space_md} fill_width={true}>
-      <Row fill_width={true}>
+      <Column fill_width={true}>
         {draft_open_target(draft)}
-        {delete_button(draft.id)}
-      </Row>
-      {confirmation}
+        <Spacer size={12} />
+        {draft_actions(draft.id)}
+        {confirmation}
+      </Column>
     </Box>
+    """
+  end
+
+  defp draft_actions(id) do
+    ~MOB"""
+    <Row fill_width={true}>
+      {save_to_bin_button(id)}
+      <Spacer size={8} />
+      {delete_button(id)}
+    </Row>
     """
   end
 
@@ -265,8 +304,24 @@ defmodule Bnana.BlogsScreen do
   font={ui_font}
   text_color={:error}
   background={:surface}
-  fill_width={false}
-  width={72}
+  weight={1}
+  on_tap={tap}
+/>)
+  end
+
+  defp save_to_bin_button(id) do
+    ui_font = @ui_font
+    element_id = "save_to_bin_#{id}"
+    tap = {self(), {:save_to_bin, id}}
+
+    ~MOB(<Button
+  id={element_id}
+  text="Save to bin"
+  text_size={:xs}
+  font={ui_font}
+  text_color={:primary}
+  background={:surface_raised}
+  weight={1}
   on_tap={tap}
 />)
   end
