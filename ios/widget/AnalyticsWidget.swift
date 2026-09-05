@@ -4,7 +4,7 @@ import WidgetKit
 private let appGroup = "group.com.aayushmau5.bnana"
 private let widgetKind = "com.aayushmau5.bnana.analytics"
 
-private enum BnanaColor {
+enum BnanaColor {
     static let surface = Color(red: 24 / 255, green: 24 / 255, blue: 24 / 255)
     static let border = Color(red: 47 / 255, green: 54 / 255, blue: 61 / 255)
     static let primary = Color(red: 77 / 255, green: 147 / 255, blue: 117 / 255)
@@ -235,7 +235,6 @@ private struct EmptyAnalyticsView: View {
     }
 }
 
-@main
 struct BnanaAnalyticsWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: widgetKind, provider: AnalyticsProvider()) { entry in
@@ -244,5 +243,13 @@ struct BnanaAnalyticsWidget: Widget {
         .configurationDisplayName("Bnana Analytics")
         .description("The latest analytics cached by bnana.")
         .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+@main
+struct BnanaWidgets: WidgetBundle {
+    var body: some Widget {
+        BnanaAnalyticsWidget()
+        LastTimeWidget()
     }
 }

@@ -92,6 +92,50 @@ defmodule Bnana.HomeScreen do
           <Column fill_width={true}>
             <Row fill_width={true}>
               <Text
+                text="EVERYDAY MEMORY"
+                text_size={:xs}
+                font={mono_font}
+                text_color={:secondary}
+                letter_spacing={1.4}
+              />
+              <Spacer />
+              <Row>
+                <Text text="· " text_size={:sm} text_color={:primary} />
+                <Icon name="clock" text="Last time" text_size={:sm} text_color={:primary} />
+                <Text text=" ·" text_size={:sm} text_color={:primary} />
+              </Row>
+            </Row>
+            <Spacer size={22} />
+            <Text
+              text="Last time"
+              text_size={36.0}
+              font={regular_font}
+              font_weight="bold"
+              text_color={:on_surface}
+            />
+            <Text
+              text="A little memory for everyday life."
+              text_size={:base}
+              font={italic_font}
+              text_color={:muted}
+              line_height={1.4}
+              padding_top={:space_xs}
+            />
+            <Spacer size={24} />
+            {nav_button("remember when  →", :open_last_time)}
+          </Column>
+        </Box>
+        <Spacer size={16} />
+        <Box
+          background={:surface}
+          border_color={:border}
+          border_width={1}
+          corner_radius={:radius_lg}
+          padding={:space_lg}
+        >
+          <Column fill_width={true}>
+            <Row fill_width={true}>
+              <Text
                 text="CURRENTLY GROWING"
                 text_size={:xs}
                 font={mono_font}
@@ -205,6 +249,10 @@ defmodule Bnana.HomeScreen do
       </Column>
     </Scroll>
     """
+  end
+
+  def handle_info({:tap, :open_last_time}, socket) do
+    {:noreply, Mob.Socket.push_screen(socket, Bnana.LastTimeScreen)}
   end
 
   def handle_info({:tap, :open_blogs}, socket) do

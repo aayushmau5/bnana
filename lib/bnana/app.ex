@@ -29,6 +29,9 @@ defmodule Bnana.App do
 
     {:ok, _} = Application.ensure_all_started(:ecto_sqlite3)
     {:ok, _} = Bnana.Repo.start_link()
+    {:ok, _} = Bnana.LastTimeRepo.start_link()
+
+    Ecto.Migrator.run(Bnana.LastTimeRepo, priv_path("last_time_migrations"), :up, all: true)
     {:ok, _} = Bnana.PhoenixClient.start_link()
     {:ok, _} = Bnana.WidgetAnalyticsCache.start_link()
 

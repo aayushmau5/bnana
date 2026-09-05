@@ -43,8 +43,10 @@ static void bnana_configure_widget_storage(void) {
 static BOOL bnana_store_capture_url(NSURL* incomingURL) {
     NSURLComponents* incoming = [NSURLComponents componentsWithURL:incomingURL
                                            resolvingAgainstBaseURL:NO];
-    if (![incoming.scheme.lowercaseString isEqualToString:@"bnana"] ||
-        ![incoming.host.lowercaseString isEqualToString:@"capture"]) {
+    BOOL lastTime = [incoming.scheme.lowercaseString isEqualToString:@"bnana"] &&
+        [incoming.host.lowercaseString isEqualToString:@"last-time"];
+    if (!lastTime && (![incoming.scheme.lowercaseString isEqualToString:@"bnana"] ||
+        ![incoming.host.lowercaseString isEqualToString:@"capture"])) {
         return NO;
     }
 
@@ -56,11 +58,12 @@ static BOOL bnana_store_capture_url(NSURL* incomingURL) {
         }
     }
 
+    if (lastTime) captured = @"bnana://last-time";
     NSURL* url = captured ? [NSURL URLWithString:captured] : nil;
     NSString* scheme = url.scheme.lowercaseString;
-    if (captured.length == 0 || captured.length > 16384 ||
+    if (!lastTime && (captured.length == 0 || captured.length > 16384 ||
         !([scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"]) ||
-        url.host.length == 0) {
+        url.host.length == 0)) {
         return NO;
     }
 

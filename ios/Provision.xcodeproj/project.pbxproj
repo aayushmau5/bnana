@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC000001 = {isa = PBXBuildFile; fileRef = CC000010; };
+		CC000002 = {isa = PBXBuildFile; fileRef = CC000011; };
 		AA000001 /* MobProvision.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002 /* MobProvision.swift */; };
 		BB000001 /* AnalyticsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000010 /* AnalyticsWidget.swift */; };
 		BB000002 /* PlayfairDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB000013 /* PlayfairDisplay-Regular.ttf */; };
@@ -39,6 +41,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CC000010 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastTimeWidget.swift; sourceTree = "<group>"; };
+		CC000011 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastTimeStore.swift; sourceTree = "<group>"; };
 		AA000002 /* MobProvision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobProvision.swift; sourceTree = "<group>"; };
 		AA000003 /* MobProvision.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MobProvision.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00000F /* Provision.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = provision/Provision.entitlements; sourceTree = "<group>"; };
@@ -75,6 +79,8 @@
 			isa = PBXGroup;
 			children = (
 				BB000010 /* AnalyticsWidget.swift */,
+                CC000010,
+                CC000011,
 				BB000012 /* Info.plist */,
 				BB000011 /* BnanaWidget.entitlements */,
 			);
@@ -189,6 +195,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB000001 /* AnalyticsWidget.swift in Sources */,
+                CC000001,
+                CC000002,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

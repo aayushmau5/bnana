@@ -1,13 +1,27 @@
 defmodule Bnana.DeepLinks do
-  @moduledoc "Routes URLs captured through Bnana's iOS Shortcut into the active Mob screen."
+  @moduledoc "Routes captured links and widget URLs into the active Mob screen."
 
   @pending_filename ".pending_capture_url"
   @max_url_bytes 16_384
 
   def consume do
     case Process.whereis(:mob_screen) do
-      screen when is_pid(screen) -> consume_pending()
-      nil -> :ok
+      screen when is_pid(screen) ->
+        send(screen, :refresh_last_time)
+        consume_pending()
+
+      nil ->
+        :ok
+    end
+
+    :ok
+  end
+
+  def open("bnana://last-time") do
+    if screen = Process.whereis(:mob_screen) do
+      if Mob.Screen.get_current_module(screen) != Bnana.LastTimeScreen do
+        GenServer.call(screen, {:navigate, {:push, Bnana.LastTimeScreen, %{}}})
+      end
     end
 
     :ok

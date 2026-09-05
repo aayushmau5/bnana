@@ -40,6 +40,6 @@ public final class BnanaWidgetReloader: NSObject {
     }
 
     @objc public static func reloadAnalytics() {
-        WidgetCenter.shared.reloadTimelines(ofKind: "com.aayushmau5.bnana.analytics")
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

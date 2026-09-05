@@ -38,7 +38,7 @@ defmodule Mix.Tasks.Bnana.Widget.Deploy do
       install!(app_path, device_id, Keyword.get(opts, :restart, true))
     end)
 
-    Mix.shell().info("\nBnana and its analytics widget are installed.")
+    Mix.shell().info("\nBnana and its widgets are installed.")
   end
 
   defp latest_mob_app! do

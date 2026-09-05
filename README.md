@@ -2,7 +2,7 @@
 
 Personal app using Elixir & [Mob](https://mobframework.com/)
 
-The iOS analytics widget is included by the normal physical-device build:
+The iOS Analytics and Last time widgets are included by the normal physical-device build:
 
 ```sh
 mix ios.native
