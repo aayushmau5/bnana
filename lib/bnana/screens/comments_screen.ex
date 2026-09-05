@@ -162,8 +162,16 @@ defmodule Bnana.CommentsScreen do
 
   defp blog_picker(nil, _selected, _expanded?), do: RemoteUI.loading("Finding blogs…")
 
-  defp blog_picker([], _selected, _expanded?),
-    do: RemoteUI.error("No blogs are available for comment moderation.")
+  defp blog_picker([], _selected, _expanded?) do
+    font = @display_font
+    ~MOB(<Text
+  text="No blogs are available for comment moderation."
+  text_size={:lg}
+  font={font}
+  text_color={:muted}
+  text_align="center"
+/>)
+  end
 
   defp blog_picker(blogs, selected, expanded?) do
     buttons =

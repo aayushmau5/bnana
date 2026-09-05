@@ -157,7 +157,14 @@ defmodule Bnana.BlogsScreen do
     italic_font = @italic_font
 
     ~MOB"""
-    <Box background={:surface} padding={:space_lg} fill_width={true}>
+    <Box
+      background={:surface}
+      border_color={:border}
+      border_width={1}
+      corner_radius={:radius_md}
+      padding={:space_lg}
+      fill_width={true}
+    >
       <Text
         text="No wandering thoughts yet."
         text_size={:lg}
@@ -186,7 +193,14 @@ defmodule Bnana.BlogsScreen do
     confirmation = delete_confirmation(draft.id, pending_delete)
 
     ~MOB"""
-    <Box background={:surface} padding={:space_md} fill_width={true}>
+    <Box
+      background={:surface}
+      border_color={:border}
+      border_width={1}
+      corner_radius={:radius_md}
+      padding={:space_md}
+      fill_width={true}
+    >
       <Column fill_width={true}>
         {draft_open_target(draft)}
         <Spacer size={12} />
@@ -212,7 +226,14 @@ defmodule Bnana.BlogsScreen do
 
     confirmation =
       ~MOB"""
-      <Box background={:surface_raised} padding={:space_md} fill_width={true}>
+      <Box
+        background={:surface_raised}
+        border_color={:error}
+        border_width={1}
+        corner_radius={:radius_md}
+        padding={:space_md}
+        fill_width={true}
+      >
         <Column fill_width={true}>
           <Text text="Delete this draft?" text_size={:sm} text_color={:on_surface} font={ui_font} />
           <Spacer size={12} />
@@ -250,7 +271,7 @@ defmodule Bnana.BlogsScreen do
     tap = {self(), {:open_draft, draft.id}}
 
     ~MOB"""
-    <Box id={id} weight={1} on_tap={tap}>
+    <Box id={id} fill_width={true} on_tap={tap}>
       <Row fill_width={true}>
         {draft_copy(draft)}
       </Row>

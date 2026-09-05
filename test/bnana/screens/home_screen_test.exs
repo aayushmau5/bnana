@@ -5,14 +5,16 @@ defmodule Bnana.HomeScreenTest do
 
   test "mounts and renders a tree the native layer can draw" do
     view = mount_screen(HomeScreen)
-    assert_renderable(view)
+    assert_renderable(view, extra: [:icon])
   end
 
   test "shows the local product destinations" do
     view = mount_screen(HomeScreen)
 
     assert text(view) =~ "Blogs"
+    assert text(view) =~ "Memory book"
     assert text(view) =~ "Saved links"
+    assert find(view, :button, text: "open the book  →")
     assert find(view, :button, text: "wander in  →")
     assert find(view, :button, text: "follow the trail  →")
     refute find(view, :button, text: "Eva")
@@ -21,6 +23,11 @@ defmodule Bnana.HomeScreenTest do
   test "opens the blogs dashboard" do
     view = HomeScreen |> mount_screen() |> render_info({:tap, :open_blogs})
     assert navigated_to(view) == Bnana.BlogsScreen
+  end
+
+  test "opens memory book" do
+    view = HomeScreen |> mount_screen() |> render_info({:tap, :open_memory_book})
+    assert navigated_to(view) == Bnana.MemoryBookScreen
   end
 
   test "opens saved links" do

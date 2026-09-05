@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <style>
+      @font-face {
+        font-family: "Playfair";
+        src: local("PlayfairDisplay-Regular"), url("../../fonts/PlayfairDisplay-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Playfair";
+        src: local("PlayfairDisplay-Italic"), url("../../fonts/PlayfairDisplay-Italic.ttf") format("truetype");
+        font-style: italic;
+      }
+
+      @font-face {
+        font-family: "Share Tech Mono";
+        src: local("ShareTechMono-Regular"), url("../../fonts/ShareTechMono-Regular.ttf") format("truetype");
+      }
+
+      :root {
+        color-scheme: dark;
+        --bg: #121212;
+        --surface: #181818;
+        --line: #2f363d;
+        --text: #dbd7ca;
+        --muted: #95938c;
+        --accent: #4d9375;
+        --mono: "Share Tech Mono", ui-monospace, monospace;
+        --serif: "Playfair", Georgia, serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        padding: 18px 18px 26px;
+        font-family: var(--serif);
+        overscroll-behavior: none;
+      }
+
+      #done { float: right; min-width: 64px; min-height: 44px; margin: 0 0 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--text); font: 16px var(--mono); }
+      #done:focus-visible { outline: 2px solid var(--accent); }
+      [hidden] { display: none !important; }
+
+      .date {
+        margin: 0 0 10px;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0 0 20px;
+        color: var(--text);
+        font-size: clamp(30px, 8vw, 38px);
+        font-weight: 400;
+        letter-spacing: -.025em;
+        line-height: 1.15;
+      }
+
+      textarea {
+        display: block;
+        width: 100%;
+        min-height: calc(100dvh - 150px);
+        padding: 17px 17px 28px;
+        resize: none;
+        overflow-y: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        outline: none;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0 31px, rgb(47 54 61 / .55) 32px),
+          var(--surface);
+        color: var(--text);
+        caret-color: var(--accent);
+        font-family: var(--serif);
+        font-size: 18px;
+        line-height: 1.78;
+      }
+
+      textarea:focus { border-color: var(--accent); }
+
+      textarea::placeholder {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+    </style>
+  </head>
+  <body>
+    <button id="done" type="button" hidden>Done</button>
+    <p class="date" id="date">Today</p>
+    <h1>What do you want to remember?</h1>
+    <textarea
+      id="body"
+      placeholder="It can be one sentence. It can be the whole day."
+      spellcheck="true"
+      aria-label="Write today's memory"
+    ></textarea>
+    <script>
+      (() => {
+        const body = document.getElementById("body");
+        const done = document.getElementById("done");
+        done.addEventListener("click", () => body.blur());
+        const date = document.getElementById("date");
+        let keyboardOpen = false;
+
+        function withMob(callback) {
+          if (window.mob && typeof window.mob.send === "function") {
+            callback(window.mob);
+          } else {
+            setTimeout(() => withMob(callback), 30);
+          }
+        }
+
+        function send(payload) {
+          withMob((mob) => mob.send(payload));
+        }
+
+        function resize() {
+          body.style.height = "auto";
+          body.style.height = `${Math.max(body.scrollHeight, window.innerHeight - 150)}px`;
+        }
+
+        function reportKeyboard(open) {
+          if (open === keyboardOpen) return;
+          keyboardOpen = open;
+          done.hidden = !open;
+          send({event: "keyboard", open});
+        }
+
+        window.addEventListener("resize", resize);
+
+        body.addEventListener("focus", () => reportKeyboard(true));
+        body.addEventListener("blur", () => reportKeyboard(false));
+
+        body.addEventListener("input", () => {
+          resize();
+          send({event: "change", body: body.value});
+        });
+
+        withMob((mob) => {
+          mob.onMessage((message) => {
+            if (message.event !== "init") return;
+            body.value = message.body || "";
+            date.textContent = message.date || "Today";
+            resize();
+
+          });
+
+          mob.send({event: "ready"});
+        });
+      })();
+    </script>
+  </body>
+</html>

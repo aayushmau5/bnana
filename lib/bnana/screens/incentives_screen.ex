@@ -142,7 +142,7 @@ defmodule Bnana.IncentivesScreen do
   defp display_title(%{title: title, url: url}) when title in [nil, ""], do: url
   defp display_title(%{title: title}), do: title
 
-  defp content(%{status: :needs_token}) do
+  defp content(%{status: :needs_token} = assigns) do
     font = @ui_font
     change = {self(), :incentives_token}
     tap = {self(), :connect_incentives}
@@ -170,7 +170,7 @@ defmodule Bnana.IncentivesScreen do
         <TextField
           id="incentives_token"
           placeholder="Incentives token"
-          value=""
+          value={assigns.token}
           secure={true}
           return_key="done"
           on_change={change}
@@ -191,7 +191,6 @@ defmodule Bnana.IncentivesScreen do
   defp content(%{status: :loading}), do: RemoteUI.loading("Asking Eva what’s inside…")
 
   defp content(%{status: {:ok, result}}) do
-    display_font = @display_font
     italic_font = @italic_font
     ui_font = @ui_font
     verdict = result |> Map.get("verdict", "consider") |> to_string() |> String.upcase()
@@ -247,7 +246,7 @@ defmodule Bnana.IncentivesScreen do
       <Spacer size={20} />
       <Button
         text="Read the original  ↗"
-        font={display_font}
+        font={ui_font}
         background={:primary}
         text_color={:on_primary}
         on_tap={open}
@@ -255,6 +254,8 @@ defmodule Bnana.IncentivesScreen do
     </Column>
     """
   end
+
+  defp content(%{status: {:error, :not_found}}), do: RemoteUI.error(error_message(:not_found))
 
   defp content(%{status: {:error, reason}}) do
     font = @ui_font

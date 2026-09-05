@@ -54,6 +54,10 @@
       button, input, textarea { font: inherit; }
       button { -webkit-tap-highlight-color: transparent; }
 
+      button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .preview { overflow-wrap: anywhere; }
+      .preview img { max-width: 100%; height: auto; }
+
       .shell {
         min-height: 100vh;
         padding: 14px 16px calc(24px + env(safe-area-inset-bottom));
@@ -75,7 +79,7 @@
       }
 
       .tab, .back-trigger {
-        min-height: 42px;
+        min-height: 44px;
         padding: 8px 12px;
         border: 0;
         border-radius: 8px;
@@ -127,7 +131,7 @@
       }
 
       .title-input::placeholder, .body-input::placeholder {
-        color: color-mix(in srgb, var(--muted) 72%, transparent);
+        color: var(--muted);
       }
 
       .body-input {
@@ -315,8 +319,8 @@
     <main class="shell">
       <nav class="tabs" aria-label="Editor mode">
         <button class="back-trigger" id="back-trigger" type="button" aria-label="Back to blogs">←</button>
-        <button class="tab active" id="edit-tab" type="button">Editing</button>
-        <button class="tab" id="preview-tab" type="button">Viewing</button>
+        <button class="tab active" id="edit-tab" type="button" aria-pressed="true">Editing</button>
+        <button class="tab" id="preview-tab" type="button" aria-pressed="false">Viewing</button>
       </nav>
 
       <section id="editor-pane">
@@ -333,7 +337,7 @@
     </main>
 
     <button class="components-trigger" id="components-trigger" type="button" aria-label="Insert component">＋</button>
-    <div class="save-state" id="save-state">saved locally</div>
+    <div class="save-state" id="save-state" role="status" aria-live="polite">saved locally</div>
 
     <aside class="component-sheet" id="component-sheet" aria-hidden="true">
       <div class="sheet-card">
@@ -448,6 +452,8 @@
           previewPane.hidden = !previewing;
           editTab.classList.toggle("active", !previewing);
           previewTab.classList.toggle("active", previewing);
+          editTab.setAttribute("aria-pressed", String(!previewing));
+          previewTab.setAttribute("aria-pressed", String(previewing));
           document.getElementById("components-trigger").hidden = previewing;
           if (previewing) renderPreview();
           if (report) sendViewState();

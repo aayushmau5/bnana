@@ -3,12 +3,18 @@
 # The activated plugins' tier-3/4 contributions, read at boot by Mob.Plugins.
 # Regenerated whenever `config :mob, :plugins` changes (the deploy/regen hook).
 %{
-  nifs: [],
-  composites: [],
-  default_style: nil,
-  lifecycle: [],
-  notification_handlers: [],
-  screens: [],
+  nifs: [:mob_camera_nif],
   settings: [],
-  styles: []
+  screens: [
+    %{
+      module: MobCamera.DemoScreen,
+      plugin: :mob_camera,
+      default_route: "/mob_camera/demo"
+    }
+  ],
+  notification_handlers: [],
+  lifecycle: [],
+  styles: [],
+  default_style: nil,
+  composites: []
 }

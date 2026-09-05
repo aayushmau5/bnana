@@ -168,7 +168,7 @@ defmodule Bnana.PhoenixScreen do
 
   defp content(%{connection: %{configured?: true}}), do: RemoteUI.loading("Opening the channel…")
 
-  defp content(_assigns) do
+  defp content(assigns) do
     font = @ui_font
     change = {self(), :phoenix_secret}
     tap = {self(), :connect}
@@ -195,7 +195,7 @@ defmodule Bnana.PhoenixScreen do
         <TextField
           id="phoenix_secret"
           placeholder="Phoenix secret"
-          value=""
+          value={assigns.secret}
           secure={true}
           return_key="done"
           on_change={change}

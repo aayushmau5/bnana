@@ -113,14 +113,16 @@ defmodule Bnana.ContactMessagesScreen do
     >
       <Column fill_width={true}>
         <Row fill_width={true}>
-          <Text
-            text={email}
-            text_size={:base}
-            font={display_font}
-            font_weight="bold"
-            text_color={:on_surface}
-          />
-          <Spacer />
+          <Column weight={1}>
+            <Text
+              text={email}
+              text_size={:base}
+              font={display_font}
+              font_weight="bold"
+              text_color={:on_surface}
+            />
+          </Column>
+          <Spacer size={8} />
           <Text text="→" text_size={:base} text_color={:primary} />
         </Row>
         <Text

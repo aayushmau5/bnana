@@ -48,6 +48,50 @@ defmodule Bnana.HomeScreen do
           <Column fill_width={true}>
             <Row fill_width={true}>
               <Text
+                text="DAILY PAGES"
+                text_size={:xs}
+                font={mono_font}
+                text_color={:secondary}
+                letter_spacing={1.4}
+              />
+              <Spacer />
+              <Row>
+                <Text text="· " text_size={:sm} text_color={:primary} />
+                <Icon name="book.closed" text="Memory book" text_size={:sm} text_color={:primary} />
+                <Text text=" ·" text_size={:sm} text_color={:primary} />
+              </Row>
+            </Row>
+            <Spacer size={22} />
+            <Text
+              text="Memory book"
+              text_size={36.0}
+              font={regular_font}
+              font_weight="bold"
+              text_color={:on_surface}
+            />
+            <Text
+              text="Small days, kept gently."
+              text_size={:base}
+              font={italic_font}
+              text_color={:muted}
+              line_height={1.4}
+              padding_top={:space_xs}
+            />
+            <Spacer size={24} />
+            {nav_button("open the book  →", :open_memory_book)}
+          </Column>
+        </Box>
+        <Spacer size={16} />
+        <Box
+          background={:surface}
+          border_color={:border}
+          border_width={1}
+          corner_radius={:radius_lg}
+          padding={:space_lg}
+        >
+          <Column fill_width={true}>
+            <Row fill_width={true}>
+              <Text
                 text="CURRENTLY GROWING"
                 text_size={:xs}
                 font={mono_font}
@@ -165,6 +209,10 @@ defmodule Bnana.HomeScreen do
 
   def handle_info({:tap, :open_blogs}, socket) do
     {:noreply, Mob.Socket.push_screen(socket, Bnana.BlogsScreen)}
+  end
+
+  def handle_info({:tap, :open_memory_book}, socket) do
+    {:noreply, Mob.Socket.push_screen(socket, Bnana.MemoryBookScreen)}
   end
 
   def handle_info({:tap, :open_phoenix}, socket) do

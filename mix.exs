@@ -21,6 +21,7 @@ defmodule Bnana.MixProject do
   defp deps do
     [
       {:mob, "~> 0.7"},
+      {:mob_camera, "~> 0.1"},
       {:mob_dev, "~> 0.6", only: :dev, runtime: false},
       {:ecto_sqlite3, "~> 0.18"},
       {:phoenix_socket_client, "~> 0.8.2"},

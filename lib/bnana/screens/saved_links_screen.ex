@@ -156,14 +156,16 @@ defmodule Bnana.SavedLinksScreen do
     >
       <Column fill_width={true}>
         <Row fill_width={true}>
-          <Text
-            text={title}
-            text_size={:lg}
-            font={display_font}
-            font_weight="bold"
-            text_color={title_color}
-          />
-          <Spacer />
+          <Column weight={1}>
+            <Text
+              text={title}
+              text_size={:lg}
+              font={display_font}
+              font_weight="bold"
+              text_color={title_color}
+            />
+          </Column>
+          <Spacer size={8} />
           {read_badge(link.read_at)}
           <Text text="↗" text_size={:base} font={ui_font} text_color={:primary} />
         </Row>

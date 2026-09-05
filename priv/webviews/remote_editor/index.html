@@ -10,12 +10,13 @@
       * { box-sizing: border-box; }
       html, body { min-height:100%; margin:0; background:var(--bg); color:var(--text); }
       body { padding:calc(12px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); font-family:var(--serif); }
-      nav { display:grid; grid-template-columns:44px 1fr 84px; align-items:center; gap:6px; margin-bottom:24px; padding:5px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
-      button { min-height:42px; border:0; border-radius:8px; font-family:var(--mono); font-size:14px; }
+      nav { display:grid; grid-template-columns:44px minmax(0, 1fr) 84px; align-items:center; gap:6px; margin-bottom:24px; padding:5px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+      button { min-height:44px; border:0; border-radius:8px; font-family:var(--mono); font-size:14px; }
       #back { background:transparent; color:var(--gold); font-size:20px; }
       #save { background:var(--green); color:#121212; }
       #save[disabled] { opacity:.6; }
       #state { overflow:hidden; color:var(--muted); font-family:var(--mono); font-size:12px; text-align:center; text-overflow:ellipsis; white-space:nowrap; }
+      button:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
       main { display:grid; gap:18px; }
       h1 { margin:0 0 4px; font-size:38px; line-height:1.05; }
       section { display:grid; gap:8px; }
@@ -24,15 +25,15 @@
       input:focus, textarea:focus, select:focus { border-color:var(--green); }
       input { min-height:52px; padding:12px 14px; font:23px var(--serif); }
       textarea { min-height:50dvh; padding:14px; resize:none; font-family:var(--mono); font-size:16px; line-height:1.65; caret-color:var(--green); }
-      select { min-height:52px; padding:0 14px; font-family:var(--mono); font-size:14px; }
+      select { min-height:52px; padding:0 14px; font-family:var(--mono); font-size:16px; }
       .error { color:var(--red) !important; }
       [hidden] { display:none !important; }
     </style>
   </head>
   <body>
     <nav>
-      <button id="back" type="button">←</button>
-      <span id="state">ready</span>
+      <button id="back" type="button" aria-label="Go back">←</button>
+      <span id="state" role="status" aria-live="polite">ready</span>
       <button id="save" type="button">Save</button>
     </nav>
     <main>

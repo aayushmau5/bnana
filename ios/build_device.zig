@@ -726,6 +726,7 @@ fn addLink(b: *std.Build, step: *std.Build.Step, opts: LinkOptions) void {
     run.addArgs(&.{ "-Xlinker", "-dead_strip" });
     const frameworks_base = [_][]const u8{
         "UIKit",
+        "PhotosUI",
         "Foundation",
         "CoreGraphics",
         "QuartzCore",

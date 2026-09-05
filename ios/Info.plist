@@ -49,6 +49,10 @@
     </array>
     <key>NSMicrophoneUsageDescription</key>
     <string>Bnana uses the microphone for audio recording.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Bnana uses the camera to add photos to your Memory Book.</string>
+    <key>UIUserInterfaceStyle</key>
+    <string>Dark</string>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UIApplicationSceneManifest</key>

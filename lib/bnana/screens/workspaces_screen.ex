@@ -71,7 +71,17 @@ defmodule Bnana.WorkspacesScreen do
     do: RemoteUI.loading("Finding workspaces…")
 
   defp workspace_content(%{error: error}) when is_binary(error), do: RemoteUI.error(error)
-  defp workspace_content(%{workspaces: []}), do: RemoteUI.error("No Notes workspaces exist yet.")
+
+  defp workspace_content(%{workspaces: []}) do
+    font = @display_font
+    ~MOB(<Text
+  text="No Notes workspaces exist yet."
+  text_size={:lg}
+  font={font}
+  text_color={:muted}
+  text_align="center"
+/>)
+  end
 
   defp workspace_content(%{workspaces: workspaces}) do
     cards =

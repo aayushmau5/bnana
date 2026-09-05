@@ -12,29 +12,32 @@ defmodule Bnana.RemoteUI do
     tap = {self(), :back}
 
     ~MOB"""
-    <Box background={:background} align="center" fill_width={true}>
-      <Text
-        text={title}
-        text_size={:xl}
+    <Row background={:background} fill_width={true}>
+      <Icon
+        name="back"
+        text="Go back"
+        text_size={20.0}
         text_color={:on_surface}
-        font={display_font}
-        font_weight="bold"
-        padding_top={:space_sm}
-        padding_bottom={:space_sm}
+        width={48}
+        height={48}
+        padding={12}
+        on_tap={tap}
       />
-      <Row fill_width={true}>
-        <Icon
-          name="back"
-          text="Go back"
-          text_size={20.0}
+      <Column weight={1}>
+        <Text
+          text={title}
+          text_size={:xl}
           text_color={:on_surface}
-          padding={:space_sm}
-          padding_left={10.0}
-          on_tap={tap}
+          font={display_font}
+          font_weight="bold"
+          text_align="center"
+          fill_width={true}
+          padding_top={:space_sm}
+          padding_bottom={:space_sm}
         />
-        <Spacer />
-      </Row>
-    </Box>
+      </Column>
+      <Box width={48} height={48} />
+    </Row>
     """
   end
 
@@ -88,14 +91,16 @@ defmodule Bnana.RemoteUI do
     >
       <Column fill_width={true}>
         <Row fill_width={true}>
-          <Text
-            text={title}
-            text_size={:xl}
-            font={display_font}
-            font_weight="bold"
-            text_color={:on_surface}
-          />
-          <Spacer />
+          <Column weight={1}>
+            <Text
+              text={title}
+              text_size={:xl}
+              font={display_font}
+              font_weight="bold"
+              text_color={:on_surface}
+            />
+          </Column>
+          <Spacer size={8} />
           <Text text="→" text_size={:lg} font={ui_font} text_color={:primary} />
         </Row>
         <Text
@@ -128,7 +133,7 @@ defmodule Bnana.RemoteUI do
       on_tap={tap}
     >
       <Row fill_width={true}>
-        <Column>
+        <Column weight={1}>
           <Text
             text={title}
             text_size={:base}
@@ -144,7 +149,7 @@ defmodule Bnana.RemoteUI do
             padding_top={:space_xs}
           />
         </Column>
-        <Spacer />
+        <Spacer size={8} />
         <Text text={marker} text_size={:xl} font={ui_font} text_color={:primary} />
       </Row>
     </Box>
